@@ -13,7 +13,10 @@ import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { useCallback } from "react";
 import toast from "react-hot-toast/headless";
 import { graphqlClient } from "@/clients/api";
-import { verifyUserGoogleTokenQuery } from "@/graphql/query/user";
+import { getCurrentUserQuery, verifyUserGoogleTokenQuery } from "@/graphql/query/user";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import { useCurrentUser } from "@/hooks/user";
+import { ProfileCard } from "@/components/ProfileCard";
 
 interface TwitterSidebarButton {
   id: number;
@@ -70,32 +73,30 @@ const sidebarMenuItems: TwitterSidebarButton[] = [
 ];
 
 export default function Home() {
- 
-  const handleLoginWithGoogle = useCallback( async (cred:CredentialResponse) => {
+
+  const { user } = useCurrentUser();
+  console.log(user)
+  const queryClient = useQueryClient()
+
+  const handleLoginWithGoogle = useCallback(async (cred: CredentialResponse) => {
     const googleToken = cred.credential
+    if (!googleToken) return toast.error(`Google token`);
 
-    if(!googleToken) return toast.error(`google token is not found`)
+    const { verifyGoogleToken } = await graphqlClient.request(verifyUserGoogleTokenQuery, { token: googleToken })
 
-    const {verifyGoogleToken} = await graphqlClient.request(verifyUserGoogleTokenQuery,
-      {token:googleToken}
-      )
+    toast('hello ')
+    console.log(verifyGoogleToken)
+    if (verifyGoogleToken) window.localStorage.setItem('twitter_token', verifyGoogleToken)
 
-      
-      console.log(verifyGoogleToken)
-    
-      if(verifyGoogleToken){
-        toast.success("Verify Successfully")
-        window.localStorage.setItem("__twitter_token",verifyGoogleToken)
-      }
+    await queryClient.invalidateQueries(["current-user"])
 
-      
-  },
-[])
+  }, [queryClient])
+
 
   return (
     <div>
       <div className="grid grid-cols-12 h-screen w-screen px-52">
-        <div className="col-span-3 pt-2 ml-32 ">
+        <div className="col-span-3 pt-2 ml-32 relative">
           <div className="text-3xl  hover:bg-gray-800 mb-2 rounded-full p-2 cursor-pointer transition-all w-fit">
             <BsTwitter className="text-3xl " />
           </div>
@@ -118,6 +119,12 @@ export default function Home() {
             </button>
           </div>
         </div>
+
+        <div className="absolute mt-5 bottom-5 ml-28">
+          <ProfileCard />
+        </div>
+
+
         <div className="col-span-5 border-x border-x-slate-800 ml-3 overflow-y-scroll no-scrollbar scroll-smooth">
           <FeedCard />
           <FeedCard />
@@ -140,9 +147,11 @@ export default function Home() {
           <FeedCard />
         </div>
         <div className="col-span-4 ">
-          <div>
-            <GoogleLogin onSuccess={handleLoginWithGoogle}/>
-          </div>
+          {
+            !user && <div>
+              <GoogleLogin onSuccess={handleLoginWithGoogle} />
+            </div>
+          }
         </div>
       </div>
     </div>

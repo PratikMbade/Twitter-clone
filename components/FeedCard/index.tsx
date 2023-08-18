@@ -5,24 +5,32 @@ import { FaRetweet } from "react-icons/fa"
 import {AiOutlineHeart  } from "react-icons/ai"
 import {GiHistogram  } from "react-icons/gi"
 import { FiUpload } from "react-icons/fi"
+import { useQuery } from "@tanstack/react-query"
+import { useCurrentUser } from "@/hooks/user"
 
 
 
 
 export const FeedCard: React.FC = () => {
+    const {user} = useCurrentUser()
     return (
         <>
             <div className="border border-r-0 border-l-0 border-t-0 border-gray-600  cursor-pointer pt-2.5">
                 <div className="grid grid-cols-12 pl-3">
                     <div className="col-span-1 ">
-                        <Image src="https://avatars.githubusercontent.com/u/44976328?v=4"
-                            alt="userimg"
-                            width={50}
-                            height={300}
-                            />
+                        {
+                             user && user.profileImageURL && <Image src={user?.profileImageURL}
+                             alt="userimg"
+                             width={50}
+                             height={300}
+                             className="rounded-full"
+                             />
+                        }
+                        
                     </div>
                     <div className="col-span-11 pl-3 -translate-y-1">
-                        <p className="font-bold text-sm">Piyush Grag</p>
+                        {user && user.firstName && user.lastName &&   <p className="font-bold text-sm">{user.firstName} {user.lastName}</p>}
+                      
                         <p className="font-light text-sm">Virat kohli is the best batsman i have ever seen on. love to watch him. my wishes with virat to win world cup for india and also become player of the tournament</p>
                     </div>
                 </div>
