@@ -17,6 +17,7 @@ import { getCurrentUserQuery, verifyUserGoogleTokenQuery } from "@/graphql/query
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import { useCurrentUser } from "@/hooks/user";
 import { ProfileCard } from "@/components/ProfileCard";
+import { InputField } from "@/components/InputField";
 
 interface TwitterSidebarButton {
   id: number;
@@ -126,6 +127,10 @@ export default function Home() {
 
 
         <div className="col-span-5 border-x border-x-slate-800 ml-3 overflow-y-scroll no-scrollbar scroll-smooth">
+
+          <div className="border-y border-y-slate-800 ">
+            <InputField/>
+          </div>
           <FeedCard />
           <FeedCard />
           <FeedCard />
