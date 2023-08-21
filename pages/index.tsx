@@ -10,7 +10,7 @@ import { RiBook2Line } from "react-icons/ri";
 
 import { FeedCard } from "@/components/FeedCard";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import toast from "react-hot-toast/headless";
 import { graphqlClient } from "@/clients/api";
 import { getCurrentUserQuery, verifyUserGoogleTokenQuery } from "@/graphql/query/user";
@@ -18,6 +18,8 @@ import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import { useCurrentUser } from "@/hooks/user";
 import { ProfileCard } from "@/components/ProfileCard";
 import { InputField } from "@/components/InputField";
+import { useGetAllTweets } from "@/hooks/tweet";
+import { Tweet } from "@/gql/graphql";
 
 interface TwitterSidebarButton {
   id: number;
@@ -73,11 +75,16 @@ const sidebarMenuItems: TwitterSidebarButton[] = [
   },
 ];
 
+
+
 export default function Home() {
 
   const { user } = useCurrentUser();
   console.log(user)
+  const {tweets} = useGetAllTweets()
   const queryClient = useQueryClient()
+
+
 
   const handleLoginWithGoogle = useCallback(async (cred: CredentialResponse) => {
     const googleToken = cred.credential
@@ -128,28 +135,15 @@ export default function Home() {
 
         <div className="col-span-5 border-x border-x-slate-800 ml-3 overflow-y-scroll no-scrollbar scroll-smooth">
 
-          <div className="border-y border-y-slate-800 ">
+          <div className="border-y border-y-slate-800 pl-3">
             <InputField/>
           </div>
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
+          {
+            tweets?.map(tweet => 
+              tweet? <FeedCard key={tweet?.id} data={tweet as Tweet} />:null
+            )
+          }
+         
         </div>
         <div className="col-span-4 ">
           {

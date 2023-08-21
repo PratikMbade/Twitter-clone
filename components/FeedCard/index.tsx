@@ -7,11 +7,15 @@ import {GiHistogram  } from "react-icons/gi"
 import { FiUpload } from "react-icons/fi"
 import { useQuery } from "@tanstack/react-query"
 import { useCurrentUser } from "@/hooks/user"
+import { Tweet } from "@/gql/graphql"
 
 
+interface FeedCardProps {
+    data:Tweet
+  }
 
-
-export const FeedCard: React.FC = () => {
+export const FeedCard: React.FC<FeedCardProps> = (props) => {
+    const {data} = props
     const {user} = useCurrentUser()
     return (
         <>
@@ -19,7 +23,7 @@ export const FeedCard: React.FC = () => {
                 <div className="grid grid-cols-12 pl-3">
                     <div className="col-span-1 ">
                         {
-                             user && user.profileImageURL && <Image src={user?.profileImageURL}
+                             data.author?.profileImageURL && <Image src={data.author.profileImageURL}
                              alt="userimg"
                              width={50}
                              height={300}
@@ -29,9 +33,9 @@ export const FeedCard: React.FC = () => {
                         
                     </div>
                     <div className="col-span-11 pl-3 -translate-y-1">
-                        {user && user.firstName && user.lastName &&   <p className="font-bold text-sm">{user.firstName} {user.lastName}</p>}
+                          <p className="font-bold text-sm">{data.author?.firstName} {data.author?.lastName}</p>
                       
-                        <p className="font-light text-sm">Virat kohli is the best batsman i have ever seen on. love to watch him. my wishes with virat to win world cup for india and also become player of the tournament</p>
+                        <p className="font-light text-sm">{data.content}</p>
                     </div>
                 </div>
                 <div className="flex justify-evenly my-3 text-gray-500 text-xl pl-2.5">
