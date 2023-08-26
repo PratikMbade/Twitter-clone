@@ -22,7 +22,7 @@ export const ProfileCard: React.FC = () => {
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">{user.email}</p>
+              <p className="text-sm text-gray-500">{user.email.substring(0,13)}</p>
             </div>
           </div>
         </div>
